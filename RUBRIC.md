@@ -1,6 +1,6 @@
 # Thang điểm (RUBRIC) - 100 điểm
 
-Điểm tối đa 100, cộng thêm tối đa 5 điểm thưởng (tổng không vượt quá 100). Điểm được tính theo nhóm. Số "Phần" khớp với `GUIDE.md`.
+Điểm tối đa 100, cộng thêm tối đa 5 điểm thưởng (tổng không vượt quá 100). Điểm được tính theo từng hạng mục. Đây là bài cá nhân, chấm cho từng sinh viên. Số "Phần" khớp với `GUIDE.md`.
 
 ## Tổng quan
 
@@ -19,7 +19,7 @@
 
 ## 1. Cài đặt harness - 30 điểm (tự động)
 
-Chạy `pytest` trên mã nguồn của sinh viên. Điểm mỗi nhóm = điểm tối đa × (số test đạt / tổng số test của tệp).
+Chạy `pytest` trên mã nguồn của sinh viên. Điểm của mỗi tệp test = điểm tối đa × (số test đạt / tổng số test của tệp).
 
 | Tệp test | Nội dung | Điểm |
 |---|---|---|
@@ -44,7 +44,7 @@ Chạy `pytest` trên mã nguồn của sinh viên. Điểm mỗi nhóm = điể
 
 | Điểm | Mô tả |
 |---|---|
-| 9 - 10 | Phân loại ít nhất 4 check thất bại; mỗi dòng có bằng chứng cụ thể (tên tác vụ, tên check, trích `detail` hoặc vết); chỉ ra nhóm lỗi chiếm đa số và nguyên nhân chung. Nếu mọi lỗi thuộc cùng một nhóm (thường là nhóm E), nhóm phải nêu bằng chứng phủ định cho các nhóm còn lại, ví dụ số check kỹ thuật đạt/tổng từ `scripts/check_breakdown.py`. |
+| 9 - 10 | Phân loại ít nhất 4 check thất bại; mỗi dòng có bằng chứng cụ thể (tên tác vụ, tên check, trích `detail` hoặc vết); chỉ ra nhóm lỗi chiếm đa số và nguyên nhân chung. Nếu mọi lỗi thuộc cùng một nhóm (thường là nhóm E), sinh viên phải nêu bằng chứng phủ định cho các nhóm còn lại, ví dụ số check kỹ thuật đạt/tổng từ `scripts/check_breakdown.py`. |
 | 6 - 8 | Phân loại đúng nhưng bằng chứng chung chung hoặc thiếu trích dẫn. |
 | 3 - 5 | Liệt kê lỗi nhưng chưa phân nhóm, hoặc phân nhóm sai so với `detail` và vết. |
 | 0 - 2 | Thiếu hoặc không dựa trên dữ liệu thực tế. |
@@ -130,12 +130,12 @@ Một hướng trong Phần 6 của `GUIDE.md`, thực hiện đầy đủ và c
 
 Việc mở tệp `check.py` hay `run.json` của tác vụ đánh giá trước khi đóng băng không thể kiểm chứng tự động; giảng viên chỉ trừ điểm khi có bằng chứng (ví dụ skill chứa nội dung chỉ có trong tác vụ đánh giá, hoặc lịch sử git).
 
-Nếu có nghi vấn sao chép giữa các nhóm, giảng viên đối chiếu `results/`, `skills/` và báo cáo; bài có nội dung trùng bất thường nhận 0 điểm hạng mục liên quan.
+Nếu có nghi vấn sao chép giữa các sinh viên, giảng viên đối chiếu `results/`, `skills/` và báo cáo; bài có nội dung trùng bất thường nhận 0 điểm hạng mục liên quan.
 
 ## Quy trình chấm gợi ý cho giảng viên
 
 ```bash
-git clone <kho-của-nhóm> && cd <kho>
+git clone <kho-của-sinh-viên> && cd <kho>
 # Chép lại thư mục tests/, tasks/, scripts/ và các tệp có sẵn trong src/lab/ từ kho gốc của giảng viên, rồi:
 pip install -e .
 pytest                                  # hạng mục 1

@@ -65,7 +65,7 @@ HÀM run_task(...):
 1. **Cô lập.** Tác tử chỉ làm việc trong bản sao ở thư mục tạm. Thư mục `tasks/<id>/workspace` trong kho mã nguồn không bao giờ bị sửa (có test kiểm tra).
 2. **Không để lỗi làm dừng chương trình.** Lỗi API, hết giới hạn đệ quy (`recursion_limit`) được ghi vào `error`; tác vụ vẫn được chấm trên trạng thái workspace hiện có.
 3. **`recursion_limit`** giới hạn số bước của đồ thị tác tử, là cơ chế chính để chặn một lần chạy tiêu tốn token vô hạn.
-4. **Định nghĩa các số đếm.** `tool_calls`, `subagent_calls`, `skills_read` chỉ đếm các lần gọi ở **luồng chính**, vì các message bên trong subagent không nằm trong `result["messages"]`. Số token thì tính đủ nhờ `usage`. Mọi nhóm dùng cùng định nghĩa này nên số liệu so sánh được.
+4. **Định nghĩa các số đếm.** `tool_calls`, `subagent_calls`, `skills_read` chỉ đếm các lần gọi ở **luồng chính**, vì các message bên trong subagent không nằm trong `result["messages"]`. Số token thì tính đủ nhờ `usage`. Mọi sinh viên dùng cùng định nghĩa này nên số liệu so sánh được.
 5. **`skills_modified`** là bằng chứng rằng tác tử đã sửa skill trong lúc chạy. Ở các lần chạy chính thức giá trị phải là `False`.
 6. **`skills_sha256` và `timestamp`** cho phép giảng viên kiểm tra rằng lần chạy dùng đúng bộ skill đã đóng băng và diễn ra sau thời điểm đóng băng.
 7. **Vết (`trace.md`) chỉ gồm luồng chính.** Việc subagent làm bên trong không hiện ra; chỉ thấy lệnh gọi `task` và báo cáo cuối của subagent.

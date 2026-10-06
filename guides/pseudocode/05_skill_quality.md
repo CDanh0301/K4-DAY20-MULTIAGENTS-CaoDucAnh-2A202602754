@@ -1,6 +1,6 @@
 # Hướng dẫn 05 - Chất lượng của một skill (để đánh giá skill do curator sinh)
 
-Tài liệu này không phải pseudo-code. Nó giải thích cấu trúc `SKILL.md` và các tiêu chí để đánh giá skill do curator sinh ra ở Phần 3.3. Curator tự viết skill, nhóm không sửa tay; nhóm chỉ đánh giá và quyết định giữ, xóa hoặc chạy lại curator.
+Tài liệu này không phải pseudo-code. Nó giải thích cấu trúc `SKILL.md` và các tiêu chí để đánh giá skill do curator sinh ra ở Phần 3.3. Curator tự viết skill, bạn không sửa tay; bạn chỉ đánh giá và quyết định giữ, xóa hoặc chạy lại curator.
 
 ## 1. Skill là gì
 

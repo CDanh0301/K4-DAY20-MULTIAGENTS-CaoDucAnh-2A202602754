@@ -2,7 +2,7 @@
 
 Lab về bộ khung điều khiển tác tử (Agent Harness) với Deep Agents, tác tử tự tiến hóa (Self-Evolving Agent) và đa tác tử (Multi-Agent).
 
-Hình thức: thực hành cá nhân hoặc nhóm 2 đến 3 sinh viên. Ngôn ngữ lập trình: Python 3.11 trở lên.
+Hình thức: **bài thực hành cá nhân**. Mỗi sinh viên tự làm, tự chạy thí nghiệm và nộp bài, báo cáo riêng. Ngôn ngữ lập trình: Python 3.11 trở lên.
 
 ## 1. Mục tiêu học tập
 
@@ -33,7 +33,7 @@ Ba điều kiện được so sánh (condition):
 | Điều kiện | Mô tả |
 |---|---|
 | `baseline` | Tác tử Deep Agents mặc định, không có skill. Đường cơ sở. |
-| `subagents` | Thêm các subagent do nhóm định nghĩa (đa tác tử). |
+| `subagents` | Thêm các subagent do bạn định nghĩa (đa tác tử). |
 | `skills-auto` | Nạp skill do curator tự sinh từ phản hồi và vết của tác vụ học (tác tử tự tiến hóa). |
 
 ### 2.2. Tác vụ (task) và cách đánh giá thành công hay thất bại
@@ -102,7 +102,7 @@ Kết quả mong đợi của `pytest tests/test_01_provided.py`: `15 passed`. K
 
 ## 5. Sản phẩm nộp
 
-Nộp qua kho mã nguồn (git), gồm:
+Mỗi sinh viên nộp bài riêng, qua kho mã nguồn (git) của chính mình, gồm:
 
 1. Mã nguồn đã cài đặt trong `src/lab/` (4 tệp: `agent.py`, `subagents.py`, `runner.py`, `curator.py`; chỉ các hàm đánh dấu TODO).
 2. `skills/auto/`.

@@ -92,10 +92,10 @@ description: <khi nào dùng>
 {các lần chạy}
 ```
 
-Prompt mẫu viết bằng tiếng Anh vì mô hình và các tác vụ dùng tiếng Anh; có thể viết tiếng Việt nếu nhóm muốn thử so sánh.
+Prompt mẫu viết bằng tiếng Anh vì mô hình và các tác vụ dùng tiếng Anh; có thể viết tiếng Việt nếu bạn muốn thử so sánh.
 
 ## Lưu ý khoa học
 
-- Nghiên cứu **SkillsBench** ghi nhận skill do con người biên soạn (khác với skill do mô hình tự sinh như ở lab này) tăng tỉ lệ đạt trung bình khoảng 16 điểm phần trăm, còn skill do mô hình tự sinh trung bình không có lợi. Nghiên cứu **SkillEvolBench** ghi nhận lợi ích trên tác vụ học thường không chuyển sang tác vụ mới (quá khớp - overfitting). Hãy đưa các điều này vào giả thuyết ở báo cáo và kiểm chứng bằng số liệu của nhóm.
+- Nghiên cứu **SkillsBench** ghi nhận skill do con người biên soạn (khác với skill do mô hình tự sinh như ở lab này) tăng tỉ lệ đạt trung bình khoảng 16 điểm phần trăm, còn skill do mô hình tự sinh trung bình không có lợi. Nghiên cứu **SkillEvolBench** ghi nhận lợi ích trên tác vụ học thường không chuyển sang tác vụ mới (quá khớp - overfitting). Hãy đưa các điều này vào giả thuyết ở báo cáo và kiểm chứng bằng số liệu của bạn.
 - Skill ngắn, tập trung (2 đến 3 mô-đun) thường hiệu quả hơn tài liệu dài.
 - Curator có tính ngẫu nhiên: cùng đầu vào có thể cho skill khác nhau, và một skill hợp lệ về định dạng vẫn có thể **sai hoặc có hại**. Luôn đọc từng skill do curator sinh ra (GUIDE Phần 3.3). Skill có hại phải bị xóa hoặc curator phải chạy lại; ghi lý do vào báo cáo. Không sửa tay nội dung skill trong `skills/auto/`.

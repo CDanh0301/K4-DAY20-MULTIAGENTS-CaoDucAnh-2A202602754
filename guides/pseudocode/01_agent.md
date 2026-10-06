@@ -4,7 +4,7 @@
 
 **Kiểm tra.** `pytest tests/test_02_agent.py` (chạy ngoại tuyến - offline, không tốn token).
 
-Bốn hằng số `PATHS_NOTE`, `BASE_PROMPT`, `SKILLS_NOTE`, `SUBAGENTS_NOTE` đã được cung cấp sẵn trong `agent.py` và **không sửa**: mọi sinh viên dùng cùng một system prompt thì điều kiện `baseline` mới so sánh được giữa các nhóm.
+Bốn hằng số `PATHS_NOTE`, `BASE_PROMPT`, `SKILLS_NOTE`, `SUBAGENTS_NOTE` đã được cung cấp sẵn trong `agent.py` và **không sửa**: mọi sinh viên dùng cùng một system prompt thì điều kiện `baseline` mới so sánh được giữa các sinh viên.
 
 ---
 

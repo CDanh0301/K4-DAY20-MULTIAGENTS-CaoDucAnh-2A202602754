@@ -1,8 +1,30 @@
 # Hướng dẫn thực hiện (GUIDE)
 
-Tài liệu này mô tả từng bước của lab theo thứ tự thời gian. Đọc `README.md` trước (đặc biệt mục 2 về thiết kế thí nghiệm và mục 2.3 về quy tắc xem dữ liệu). Mỗi phần có **đầu ra** (checkpoint) để tự kiểm tra trước khi sang phần tiếp theo.
+Tài liệu này mô tả từng bước của lab theo thứ tự thời gian. Đọc `README.md` trước (đặc biệt mục 2 về thiết kế thí nghiệm). Mỗi phần có **đầu ra** (checkpoint) để tự kiểm tra trước khi sang phần tiếp theo.
+
+Đây là **bài cá nhân**: bạn tự làm toàn bộ các phần, tự chạy thí nghiệm bằng khóa API của mình và nộp báo cáo riêng.
 
 Quy ước: lệnh chạy trong thư mục gốc của kho (cùng cấp với `README.md`) với môi trường ảo đã kích hoạt. Số "Phần" dưới đây là số dùng thống nhất trong mã nguồn, test, thang điểm và báo cáo.
+
+---
+
+## Quy tắc làm bài
+
+**Phản hồi (feedback) và `detail`.** Mỗi tác vụ ngoài các check kỹ thuật còn có các check **quy ước tổ chức** (tên bắt đầu bằng `rule_`) mà đề bài không nêu. Ở **tác vụ học**, check thất bại có trường `detail` trong `run.json` phát biểu quy tắc bị vi phạm (không chứa đáp án); curator dùng phản hồi này để viết skill. Ở **tác vụ đánh giá**, `detail` luôn rỗng, và có thêm một quy ước mới không học được từ tác vụ học.
+
+**Quy tắc xem dữ liệu (liêm chính học thuật).**
+
+1. Chỉ được mở `run.json` và `trace.md` của **tác vụ học** để rút kinh nghiệm. Không mở `run.json`, `trace.md` của tác vụ đánh giá và thư mục `tasks/*-eval/`.
+2. Không mở tệp `check.py` của bất kỳ tác vụ nào (chứa đáp án kỳ vọng).
+3. Không chép đáp án vào skill và không sửa tay nội dung `skills/auto/`. Tên do **quy ước của Acme** yêu cầu (tệp đầu ra như `clean.csv`, `tests/test_regressions.py`, khóa JSON như `meta`) được phép xuất hiện trong skill vì chúng chính là quy tắc; tên có sẵn trong workspace của tác vụ và mọi định danh của tác vụ đánh giá thì không (curator từ chối).
+4. Chỉ chạy `baseline` và `subagents` trên tác vụ học trước khi viết giả thuyết (Phần 4.0), để giả thuyết không biết trước điểm của tác vụ đánh giá.
+5. Sau khi chốt skill, tạo tag `freeze` và không sửa `skills/auto/` nữa (Phần 4.1).
+
+**An toàn.** Tác tử chạy lệnh shell thật trên máy bạn. Môi trường cách ly (sandbox) trong lab là thư mục tạm, chưa phải cách ly ở mức hệ điều hành; nên chạy trong Docker (`Dockerfile`). Không đưa khóa API vào mã nguồn, `trace.md` hay báo cáo; không commit `.env`. `trace.md` đã thay đường dẫn thư mục người dùng bằng `~`, vẫn nên đọc lại trước khi nộp.
+
+**Ngân sách token.** Chi phí do bạn tự chịu theo gói API của mình. Gợi ý tối đa 30 lần chạy tác vụ: `baseline` 6, `subagents` 6, kiểm tra skill trên tác vụ học 3 đến 6, chạy cuối `skills-auto` sau đóng băng 6, còn lại để chạy lại khi lỗi. Mỗi lần chạy thường dùng khoảng 15 nghìn đến 150 nghìn token. Dùng `pytest` và mô hình giả để kiểm tra mã trước khi chạy mô hình thật.
+
+**Sao lưu kết quả.** Chạy lại cùng một điều kiện ghi đè `results/<điều kiện>/`. Nếu cần giữ bằng chứng cũ, đổi tên thư mục trước khi chạy lại (ví dụ `mv results/skills-auto results/skills-auto-dev`). `lab.compare` chỉ đọc ba thư mục điều kiện đúng tên (`baseline`, `subagents`, `skills-auto`) nên thư mục có hậu tố không lẫn vào bảng.
 
 ---
 
@@ -85,7 +107,7 @@ python -m lab.runner --condition baseline --tasks code-learn logs-learn   # data
 python -m lab.runner --condition subagents --tasks learn
 ```
 
-Chỉ chạy tác vụ học ở giai đoạn này. Tác vụ đánh giá được chạy ở Phần 4, sau khi nhóm đã viết giả thuyết.
+Chỉ chạy tác vụ học ở giai đoạn này. Tác vụ đánh giá được chạy ở Phần 4, sau khi bạn đã viết giả thuyết.
 
 ### 2.2. Phân loại lỗi (error taxonomy)
 
@@ -148,7 +170,7 @@ Với mỗi skill trong `skills/auto/`, trả lời vào mục 6 của báo cáo
 2. Skill có đúng không? Có hướng dẫn nào sai hoặc gây hại không? (Curator có tính ngẫu nhiên; một skill hợp lệ về định dạng vẫn có thể sai.)
 3. Skill dài bao nhiêu dòng? Có thừa không? `description` có nêu đúng tình huống kích hoạt không?
 
-Nhóm được phép xóa skill kém chất lượng hoặc có hại, và chạy lại curator tối đa 2 lần. Ghi lý do mỗi lần xóa hoặc chạy lại. Không được sửa tay nội dung skill trong `skills/auto/`: đây là thí nghiệm về tác tử tự tiến hóa, nên giữ nguyên đầu ra của curator.
+Bạn được phép xóa skill kém chất lượng hoặc có hại, và chạy lại curator tối đa 2 lần. Ghi lý do mỗi lần xóa hoặc chạy lại. Không được sửa tay nội dung skill trong `skills/auto/`: đây là thí nghiệm về tác tử tự tiến hóa, nên giữ nguyên đầu ra của curator.
 
 ### 3.4. Kiểm tra skill có được dùng không (chỉ trên tác vụ học)
 
@@ -262,4 +284,4 @@ Chọn **một** hướng, thực hiện và ghi kết quả vào phụ lục b�
 | Curator không ghi skill nào | Không có check thất bại ở tác vụ học, hoặc mọi skill bị `validate_skill` từ chối | Đọc thông báo in ra; kiểm tra kết quả `baseline`; xem `validate_skill` báo vấn đề gì. |
 | `git commit` báo "nothing to commit" rồi không tạo tag | Dùng `&&` mà không có thay đổi | Dùng `git commit --allow-empty` như ở Phần 4.1. |
 | `test_01` báo tác vụ đạt điểm tối đa | Đã vô tình sửa `tasks/*/workspace` | `git checkout -- tasks/`. |
-| Thư mục `results/` có kết quả cũ | Chạy lại cùng điều kiện ghi đè kết quả cũ | Đổi tên thư mục cũ trước khi chạy lại (xem `README.md` mục 7). |
+| Thư mục `results/` có kết quả cũ | Chạy lại cùng điều kiện ghi đè kết quả cũ | Đổi tên thư mục cũ trước khi chạy lại (xem mục "Quy tắc làm bài" ở đầu tài liệu). |
