@@ -3,13 +3,15 @@
 Pseudo-code: guides/pseudocode/01_agent.md
 Kiểm tra:    pytest tests/test_02_agent.py
 """
+import os
+import sys
 from pathlib import Path
 
-# TODO 1: import các thành phần cần dùng, ví dụ:
-#   from deepagents import create_deep_agent
-#   from deepagents.backends import LocalShellBackend
-#   from .model import make_model
-#   from .subagents import get_subagents
+from deepagents import create_deep_agent
+from deepagents.backends import LocalShellBackend
+
+from .model import make_model
+from .subagents import get_subagents
 
 # ---- CÓ SẴN, KHÔNG SỬA: system prompt dùng chung cho mọi sinh viên (để đường cơ sở so sánh được) ----
 PATHS_NOTE = (
@@ -47,7 +49,34 @@ def make_backend(sandbox: Path):
       - Tác tử chạy được lệnh shell và gọi được `python` (cần đặt PATH).
       - KHÔNG chuyển biến môi trường của bạn vào shell của tác tử (khóa API không được lộ).
     """
-    raise NotImplementedError("TODO 2: cài đặt make_backend (xem guides/pseudocode/01_agent.md)")
+    python_dir = str(Path(sys.executable).parent)
+    extra_dirs = []
+    if sys.platform == "win32":
+        git_usr_bin = Path("C:/Program Files/Git/usr/bin")
+        git_bin = Path("C:/Program Files/Git/bin")
+        if git_usr_bin.exists():
+            extra_dirs.append(str(git_usr_bin))
+        if git_bin.exists():
+            extra_dirs.append(str(git_bin))
+
+    posix_path = f"{python_dir}:/usr/local/bin:/usr/bin:/bin"
+    if extra_dirs:
+        path_str = f"{python_dir};{';'.join(extra_dirs)};{posix_path}"
+    else:
+        path_str = posix_path
+
+    env = {
+        "PATH": path_str,
+        "HOME": str(sandbox),
+        "PYTHONDONTWRITEBYTECODE": "1",
+    }
+    return LocalShellBackend(
+        root_dir=sandbox,
+        virtual_mode=True,
+        inherit_env=False,
+        env=env,
+        timeout=120,
+    )
 
 
 def build_agent(sandbox: Path, mode: str = "single", use_skills: bool = False, model=None):
@@ -64,4 +93,26 @@ def build_agent(sandbox: Path, mode: str = "single", use_skills: bool = False, m
     mode không hợp lệ -> ném ValueError.
     Trả về: đồ thị (graph) đã biên dịch, gọi bằng `.invoke({"messages": [...]})`.
     """
-    raise NotImplementedError("TODO 3: cài đặt build_agent (xem guides/pseudocode/01_agent.md)")
+    if mode not in {"single", "subagents"}:
+        raise ValueError(f"Unknown mode: {mode}")
+
+    kwargs = {}
+    prompt = BASE_PROMPT
+
+    if mode == "subagents":
+        kwargs["subagents"] = [
+            {**sub, "system_prompt": sub["system_prompt"] + " " + PATHS_NOTE}
+            for sub in get_subagents()
+        ]
+        prompt = prompt + SUBAGENTS_NOTE
+
+    if use_skills:
+        kwargs["skills"] = ["/skills/"]
+        prompt = prompt + SKILLS_NOTE
+
+    return create_deep_agent(
+        model=model or make_model(),
+        system_prompt=prompt,
+        backend=make_backend(sandbox),
+        **kwargs,
+    )

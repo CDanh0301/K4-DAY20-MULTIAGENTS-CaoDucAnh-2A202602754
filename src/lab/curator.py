@@ -55,6 +55,38 @@ def parse_skill_blocks(reply: str) -> list[tuple[str, str]]:
 # --------------------------------------------------------------------------------------------------
 
 
+import json
+import logging
+from .model import make_model
+from .tasks import ROOT
+
+logger = logging.getLogger(__name__)
+
+CURATOR_PROMPT_TEMPLATE = """You write reusable Agent Skills for a software engineering and data analysis agent.
+Below are the failed checks (check names and evaluator review comments/rules) and execution traces from previous learning task runs.
+Identify common procedural errors and organizational rules (NOT specific answers or hardcoded constants), and write up to {max_skills} concise skills that help prevent these errors on NEW tasks of the same kind.
+
+Rules:
+- Generalize: Do not mention task IDs, specific input file names belonging to one task, or specific numbers/answers.
+- Mentioning standard Acme organization conventions required by the house rules (e.g. output file conventions like clean.csv, tests/test_regressions.py, metadata key 'meta', etc.) is allowed and encouraged when they represent general rules.
+- Each skill must have YAML frontmatter with `name` (lowercase letters, digits, and hyphens only, max 64 chars) and `description` (one sentence: when to use this skill, max 1024 chars), followed by an imperative checklist of at most 40 lines.
+- Format each skill exactly as follows:
+=== SKILL: <name> ===
+---
+name: <name>
+description: <when to use this skill>
+---
+# <Title>
+
+1. <Step 1>
+2. <Step 2>
+=== END ===
+
+Failed runs feedback:
+{runs_feedback}
+"""
+
+
 def curate_skills(results_dir="results", source_condition="baseline", out_dir=None, model=None, max_skills: int = 3) -> list[Path]:
     """Đọc các lần chạy của TÁC VỤ HỌC (role == "learn") trong `source_condition`, nhờ LLM viết skill, ghi file.
 
@@ -68,7 +100,87 @@ def curate_skills(results_dir="results", source_condition="baseline", out_dir=No
     model mặc định: make_model() (lab.model).
     Trả về: danh sách đường dẫn SKILL.md đã ghi.
     """
-    raise NotImplementedError("TODO: cài đặt curate_skills (xem guides/pseudocode/04_curator.md)")
+    if out_dir is None:
+        out_path = ROOT / "skills" / "auto"
+    else:
+        out_path = Path(out_dir)
+
+    source_path = Path(results_dir) / source_condition
+    runs_with_failures = []
+
+    if source_path.exists():
+        for run_file in sorted(source_path.glob("*/run.json")):
+            try:
+                data = json.loads(run_file.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+
+            if data.get("role") != "learn":
+                continue
+
+            failed_checks = []
+            for c in data.get("checks", []):
+                if not c.get("passed", False):
+                    failed_checks.append((c.get("name", ""), c.get("detail", "")))
+
+            if not failed_checks:
+                continue
+
+            trace_file = run_file.parent / "trace.md"
+            trace_tail = ""
+            if trace_file.exists():
+                trace_content = trace_file.read_text(encoding="utf-8")
+                trace_tail = trace_content[-6000:]
+
+            runs_with_failures.append({
+                "task": data.get("task", run_file.parent.name),
+                "failed": failed_checks,
+                "trace": trace_tail,
+            })
+
+    if not runs_with_failures:
+        print("Warning: No failed checks found in learning task runs. Skipping skill curation.")
+        return []
+
+    feedback_parts = []
+    for r in runs_with_failures:
+        feedback_parts.append(f"Task: {r['task']}")
+        feedback_parts.append("Failed checks:")
+        for name, detail in r["failed"]:
+            feedback_parts.append(f"  - Check: {name}")
+            if detail:
+                feedback_parts.append(f"    Evaluator feedback: {detail}")
+        if r["trace"]:
+            feedback_parts.append("Trace snippet:")
+            feedback_parts.append(r["trace"])
+        feedback_parts.append("-" * 30)
+
+    prompt = CURATOR_PROMPT_TEMPLATE.format(
+        max_skills=max_skills,
+        runs_feedback="\n".join(feedback_parts),
+    )
+
+    llm = model or make_model()
+    reply = llm.invoke(prompt).content
+
+    blocks = parse_skill_blocks(reply)
+    written = []
+
+    for name, text in blocks:
+        if len(written) >= max_skills:
+            break
+        problems = validate_skill(text, expected_name=name)
+        if problems:
+            logger.warning("Rejecting skill '%s': %s", name, problems)
+            continue
+
+        skill_dir = out_path / name
+        skill_dir.mkdir(parents=True, exist_ok=True)
+        file_path = skill_dir / "SKILL.md"
+        file_path.write_text(text.strip() + "\n", encoding="utf-8")
+        written.append(file_path)
+
+    return written
 
 
 if __name__ == "__main__":
